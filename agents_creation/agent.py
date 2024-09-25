@@ -21,7 +21,7 @@ class Agent:
         agent_prompt = agent_prompt.partial(system_message = system_message)
         agent_prompt = agent_prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
 
-        self.llm: llm
+        self.llm = llm
         self.prompt: ChatPromptTemplate = agent_prompt
-        self.tools: tools
+        self.tools = tools
     

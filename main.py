@@ -7,6 +7,8 @@ from langchain_core.messages import (
     ToolMessage,
 )
 
+from langchain_core.prompts import ChatPromptTemplate
+
 from langgraph.graph import END, StateGraph, START
 
 from typing import Annotated
@@ -80,9 +82,9 @@ print("State definition done")
 input("press any key to continue")
 
 # Helper function to invoke agent
-def agent_node(state, agent, name):
-    prompt = agent["prompt"]
-    llm = agent["llm"]
+def agent_node(state, agent : Agent, name):
+    prompt : ChatPromptTemplate = agent.prompt
+    llm = agent.llm
     
     # Concatenare i contenuti dei messaggi in una singola stringa
     messages = state["messages"]
