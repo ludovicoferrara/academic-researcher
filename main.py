@@ -7,6 +7,8 @@ from langchain_core.messages import (
     ToolMessage,
 )
 
+from agents_definition.mock.mock_agent import AgentNode
+
 from langchain_core.prompts import ChatPromptTemplate
 
 from langgraph.graph import END, StateGraph, START
@@ -81,32 +83,7 @@ class AgentState(TypedDict):
 print("State definition done")
 input("press any key to continue")
 
-# Helper function to invoke agent
-def agent_node(state, agent : Agent, name):
-    prompt : ChatPromptTemplate = agent.prompt
-    llm = agent.llm
-    
-    # Concatenare i contenuti dei messaggi in una singola stringa
-    messages = state["messages"]
-    prompt_text = "\n".join([message.content for message in messages])
-    
-    # Passare il prompt al modello LLM
-    response = llm(prompt_text)
-    
-    # Verifica se la risposta è una stringa o un dizionario
-    if isinstance(response, str):
-        result_content = response  # Se è una stringa, usala direttamente
-    else:
-        # In caso di altre strutture, gestiscile qui (es. se il modello restituisce un dizionario)
-        result_content = response.get("content", "Errore: risposta inattesa dal modello.")
-    
-    # Creiamo il formato corretto per il messaggio di ritorno
-    result = AIMessage(content=result_content, name=name)
-    
-    return {
-        "messages": [result],
-        "sender": name,
-    }
+
 
 # Definizione degli agenti
 research_agent = Agent(
@@ -114,14 +91,14 @@ research_agent = Agent(
     [tavily_tool],
     system_message="You should provide accurate data for the chart_generator to use.",
 )
-research_node = functools.partial(agent_node, agent=research_agent, name="Researcher")
+research_node = functools.partial(AgentNode(), agent=research_agent, name="Researcher")
 
 chart_agent = Agent(
     hf_llm,
     [python_repl],
     system_message="Any charts you display will be visible by the user.",
 )
-chart_node = functools.partial(agent_node, agent=chart_agent, name="chart_generator")
+chart_node = functools.partial(AgentNode(), agent=chart_agent, name="chart_generator")
 
 print("Agent definition done")
 input("press any key to continue")
