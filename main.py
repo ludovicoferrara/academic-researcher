@@ -144,7 +144,7 @@ events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Fetch the UK's GDP over the past 5 years,"
+                content="Fetch the world's population increase over the past 5 years,"
                 " then draw a line graph of it."
                 " Once you code it up, finish."
             )
