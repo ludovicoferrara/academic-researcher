@@ -1,11 +1,13 @@
-from agents_creation.agent import Agent
+from graph_elements.agent import Agent
+from graph_elements.agent_state import AgentState
 
 from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 
+
 class AgentNode : 
 
-    def __init__(self, state, agent : Agent, name): 
+    def __init__(self, state: AgentState, agent : Agent, name): 
         prompt : ChatPromptTemplate = agent.prompt
         llm = agent.llm
     

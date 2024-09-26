@@ -7,7 +7,9 @@ from langchain_core.messages import (
     ToolMessage,
 )
 
-from agents_definition.mock.mock_agent import AgentNode
+from graph_elements.agent_node import AgentNode
+from graph_elements.agent_state import AgentState
+
 
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -34,7 +36,7 @@ from typing import Literal
 
 from IPython.display import Image, display
 
-from agents_creation.agent import Agent
+from graph_elements.agent import Agent
 
 os.environ["TAVILY_API_KEY"]= "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"
 
@@ -49,9 +51,6 @@ hf_llm = HuggingFaceHub(
 )
 
 _set_if_undefined("TAVILY_API_KEY")
-
-print("Setup done")
-input("press any key to continue")
 
 tavily_tool = TavilySearchResults(max_results=5)
 
@@ -73,41 +72,28 @@ def python_repl(
         result_str + "\n\nIf you have completed all tasks, respond with FINAL ANSWER."
     )
 
-print("Tools creation done")
-input("press any key to continue")
+state = AgentState(
+    messages=[],
+    sender=""
+)
 
-class AgentState(TypedDict):
-    messages: Annotated[Sequence[BaseMessage], operator.add]
-    sender: str
-
-print("State definition done")
-input("press any key to continue")
-
-
-
-# Definizione degli agenti
+# Creazione e Definizione degli agenti
 research_agent = Agent(
     hf_llm,
     [tavily_tool],
     system_message="You should provide accurate data for the chart_generator to use.",
 )
-research_node = functools.partial(AgentNode(), agent=research_agent, name="Researcher")
+research_node = AgentNode(state=state, agent=research_agent, name="Researcher")
 
 chart_agent = Agent(
     hf_llm,
     [python_repl],
     system_message="Any charts you display will be visible by the user.",
 )
-chart_node = functools.partial(AgentNode(), agent=chart_agent, name="chart_generator")
-
-print("Agent definition done")
-input("press any key to continue")
+chart_node = AgentNode(state=state, agent=chart_agent, name="chart_generator")
 
 tools = [tavily_tool, python_repl]
 tool_node = ToolNode(tools)
-
-print("Tool node definition done")
-input("press any key to continue")
 
 def router(state) -> Literal["call_tool", "__end__", "continue"]:
     messages = state["messages"]
@@ -118,10 +104,7 @@ def router(state) -> Literal["call_tool", "__end__", "continue"]:
         return "__end__"
     return "continue"
 
-print("Edge logic definition done")
-input("press any key to continue")
-
-workflow = StateGraph(AgentState)
+workflow = StateGraph(state_schema=state)
 
 workflow.add_node("Researcher", research_node)
 workflow.add_node("chart_generator", chart_node)
