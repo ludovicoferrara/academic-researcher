@@ -1,7 +1,17 @@
+from langchain_core.tools import tool
 import requests
 from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import ConnectionError, Timeout, RequestException
+
+@tool
+def arXiv_research( ) :
+    
+    
+    
+    return 0
+
+
 
 # Funzione per costruire l'URL della query
 def build_query_url(search_term, start=0, max_results=10):
