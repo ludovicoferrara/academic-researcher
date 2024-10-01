@@ -6,6 +6,7 @@ from langchain_core.messages import (
     HumanMessage,
     ToolMessage,
 )
+from langchain_openai import OpenAI
 
 from graph_elements.agent_node import AgentNode
 from graph_elements.agent_state import AgentState
@@ -43,16 +44,18 @@ from tools.arXiv_research import arxiv_search
 from tools.printer import print_string
 
 os.environ["TAVILY_API_KEY"]= "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"
+os.environ["OPENAI_API_KEY"] = "sk-GEB9oAjwKUnuCxlEO6gu8GzO1D75F4WLxo6UhPkz4HT3BlbkFJVjxNR2lUFVB1wSm_4annlkQb4wnEhqK04auNR0bfwA"
 
 def _set_if_undefined(var: str):
     if not os.environ.get(var):
         os.environ[var] = getpass.getpass(f"Please provide your {var}")
 
 # Sostituiamo con un modello gratuito pubblico, come google/flan-t5-xl
-hf_llm = HuggingFaceHub(
-    repo_id="OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",  # Modello open source gratuito e pubblico
-    huggingfacehub_api_token="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"
-)
+#hf_llm = HuggingFaceHub(
+  #  repo_id="OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",  # Modello open source gratuito e pubblico
+ #   huggingfacehub_api_token="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"
+#)
+llm = OpenAI(model="gpt-3.5-turbo", temperature=0.7)
 
 _set_if_undefined("TAVILY_API_KEY")
 
@@ -82,20 +85,20 @@ state = AgentState(
 #chart_node = AgentNode(state=state, agent=chart_agent, name="chart_generator")
 
 arXiv_agent = Agent(
-    hf_llm,
+    llm,
     [arxiv_search],
     system_message="You should provide titles, authors and abstracts based on the search term.",
 )
 arXiv_node = AgentNode(state=state, agent=arXiv_agent, name="arXiv_researcher")
 
 printer_agent = Agent(
-    hf_llm,
+    llm,
     [print_string],
-    system_message="Any string you pass is visible to the user.",
+    system_message="Any string you print is visible to the user.",
 )
 printer_node = AgentNode(state=state, agent=arXiv_agent, name="printer")
 
-tools = [python_repl, arxiv_search, print_string]
+tools = [arxiv_search, print_string]
 tool_node = ToolNode(tools)
 
 workflow = StateGraph(state_schema=state)
@@ -131,10 +134,10 @@ graph = workflow.compile()
 print("Graph definition done")
 input("press any key to continue")
 
-try:
-    display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
-except Exception:
-    pass
+#try:
+ #   display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
+#except Exception:
+ #   pass
 
 events = graph.stream(
     {
