@@ -1,3 +1,4 @@
+from typing import Annotated
 from langchain_core.tools import tool
 import requests
 from bs4 import BeautifulSoup
@@ -5,11 +6,20 @@ import requests
 from requests.exceptions import ConnectionError, Timeout, RequestException
 
 @tool
-def arXiv_research( ) :
+def arxiv_search(
+    search_term: Annotated[str, "Il termine di ricerca per gli articoli su arXiv"],
+    start: int = 0,
+    max_results: int = 10
+) -> str:
+    """
+    Use this tool to make research of articles on arXiv. It returns titles, authors and abstracts.
+    """
+    xml_data = fetch_arxiv_data(search_term, start, max_results)
     
-    
-    
-    return 0
+    if xml_data:
+        return parse_arxiv_data(xml_data)
+    else:
+        return "Nessun dato disponibile o errore durante la richiesta."
 
 
 
@@ -50,14 +60,14 @@ def parse_arxiv_data(xml_data):
         authors = entry.find_all('author')
         author_names = [author.find('name').text for author in authors]
         
-        print(f"Titolo: {title}")
-        print(f"Autori: {', '.join(author_names)}")
+        print(f"Title: {title}")
+        print(f"Authors: {', '.join(author_names)}")
         print(f"Abstract: {summary}")
         print("-" * 40)
 
 # Esempio di utilizzo
-search_term = "quantum computing"
-xml_data = fetch_arxiv_data(search_term)
+#search_term = "quantum computing"
+#xml_data = fetch_arxiv_data(search_term)
 
-if xml_data:
-    parse_arxiv_data(xml_data)
+#if xml_data:
+#    parse_arxiv_data(xml_data)

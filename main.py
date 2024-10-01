@@ -26,6 +26,7 @@ from typing import Annotated, Sequence, TypedDict
 
 from langchain import HuggingFaceHub
 
+from tools.arXiv_research import arxiv_search
 from tools.python_repl import python_repl
 
 from langchain_core.messages import AIMessage
