@@ -7,7 +7,7 @@ from requests.exceptions import ConnectionError, Timeout, RequestException
 
 @tool
 def arxiv_search(
-    search_term: Annotated[str, "Il termine di ricerca per gli articoli su arXiv"],
+    search_term: Annotated[str, "the search tearm to make research on arXiv"],
     start: int = 0,
     max_results: int = 10
 ) -> str:
@@ -17,9 +17,9 @@ def arxiv_search(
     xml_data = fetch_arxiv_data(search_term, start, max_results)
     
     if xml_data:
-        return parse_arxiv_data(xml_data)
+        return parse_arxiv_data(xml_data) 
     else:
-        return "Nessun dato disponibile o errore durante la richiesta."
+        return "No available data or bad request error"
 
 
 
@@ -54,16 +54,15 @@ def parse_arxiv_data(xml_data):
     
     # Iterare sui risultati e stampare informazioni utili
     entries = soup.find_all('entry')
+    s = ""
     for entry in entries:
         title = entry.find('title').text
         summary = entry.find('summary').text
         authors = entry.find_all('author')
         author_names = [author.find('name').text for author in authors]
-        
-        print(f"Title: {title}")
-        print(f"Authors: {', '.join(author_names)}")
-        print(f"Abstract: {summary}")
-        print("-" * 40)
+        author_names = ', '.join(author_names)
+        s+= "Title: {title}" + "Authors: {author_names}" + "Abstract: {summary}" + ("-" * 40) 
+    return s
 
 # Esempio di utilizzo
 #search_term = "quantum computing"
