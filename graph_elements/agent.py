@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-
+from langchain_core.language_models import LLM
 class Agent:
 
-    def __init__(self, llm, tools, system_message: str) :
+    def __init__(self, llm: LLM , tools, system_message: str) :
         agent_prompt = ChatPromptTemplate.from_messages(
         [
             (

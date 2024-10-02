@@ -16,14 +16,14 @@ class AgentNode :
         prompt_text = "\n".join([message.content for message in messages])
     
         # Passare il prompt al modello LLM  
-        response = llm(prompt_text)
+        response = llm.invoke(prompt_text)
     
         # Verifica se la risposta è una stringa o un dizionario
         if isinstance(response, str):
             result_content = response  # Se è una stringa, usala direttamente
         else:
             # In caso di altre strutture, gestiscile qui (es. se il modello restituisce un dizionario)
-            result_content = response.get("content", "Errore: risposta inattesa dal modello.")
+            result_content = response.get("content", "Error: unexpected model answer.")
 
         # Creiamo il formato corretto per il messaggio di ritorno
         result = AIMessage(content=result_content, name=name)

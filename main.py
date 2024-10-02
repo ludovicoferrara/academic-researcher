@@ -1,11 +1,13 @@
 import getpass
 import os
 
+from langchain_cohere import ChatCohere
 from langchain_core.messages import (
     BaseMessage,
     HumanMessage,
     ToolMessage,
 )
+
 from langchain_openai import OpenAI
 
 from graph_elements.agent_node import AgentNode
@@ -43,23 +45,25 @@ from graph_elements.router import Router
 from tools.arXiv_research import arxiv_search 
 from tools.printer import print_string
 
-os.environ["TAVILY_API_KEY"]= "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"
-os.environ["OPENAI_API_KEY"] = "sk-GEB9oAjwKUnuCxlEO6gu8GzO1D75F4WLxo6UhPkz4HT3BlbkFJVjxNR2lUFVB1wSm_4annlkQb4wnEhqK04auNR0bfwA"
+#os.environ["TAVILY_API_KEY"] = "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"
+#os.environ["OPENAI_API_KEY"] = "sk-GEB9oAjwKUnuCxlEO6gu8GzO1D75F4WLxo6UhPkz4HT3BlbkFJVjxNR2lUFVB1wSm_4annlkQb4wnEhqK04auNR0bfwA"
+os.environ["COHERE_API_KEY"] = "LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17"
 
-def _set_if_undefined(var: str):
-    if not os.environ.get(var):
-        os.environ[var] = getpass.getpass(f"Please provide your {var}")
+#def _set_if_undefined(var: str):
+ #   if not os.environ.get(var):
+  #      os.environ[var] = getpass.getpass(f"Please provide your {var}")
 
-# Sostituiamo con un modello gratuito pubblico, come google/flan-t5-xl
 #hf_llm = HuggingFaceHub(
   #  repo_id="OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",  # Modello open source gratuito e pubblico
  #   huggingfacehub_api_token="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"
 #)
-llm = OpenAI(model="gpt-3.5-turbo", temperature=0.7)
+#llm = OpenAI(model="gpt-3.5-turbo", temperature=0.7)
 
-_set_if_undefined("TAVILY_API_KEY")
+llm = ChatCohere(cohere_api_key="LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17")
 
-tavily_tool = TavilySearchResults(max_results=5)
+#_set_if_undefined("TAVILY_API_KEY")
+
+#tavily_tool = TavilySearchResults(max_results=5)
 
 # Warning: This executes code locally, which can be unsafe when not sandboxed
 #repl = PythonREPL()
@@ -115,7 +119,7 @@ workflow.add_conditional_edges(
     {"continue": "printer", "call_tool": "call_tool", "__end__": END},
 )
 workflow.add_conditional_edges(
-    "chart_generator",
+    "printer",
     Router.route,
     {"continue": "arXiv_researcher", "call_tool": "call_tool", "__end__": END},
 )
