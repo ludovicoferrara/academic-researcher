@@ -1,3 +1,4 @@
+import functools
 import getpass
 import os
 
@@ -10,7 +11,7 @@ from langchain_core.messages import (
 
 from langchain_openai import OpenAI
 
-from graph_elements.agent_node import AgentNode
+from graph_elements.agent_node import AgentNodeFactory
 from graph_elements.agent_state import AgentState
 
 
@@ -26,8 +27,6 @@ from langchain_experimental.utilities import PythonREPL
 
 import operator
 from typing import Annotated, Sequence, TypedDict
-
-from langchain import HuggingFaceHub
 
 from tools.arXiv_research import arxiv_search
 from tools.python_repl import python_repl
@@ -93,19 +92,19 @@ arXiv_agent = Agent(
     [arxiv_search],
     system_message="You should provide titles, authors and abstracts based on the search term.",
 )
-arXiv_node = AgentNode(state=state, agent=arXiv_agent, name="arXiv_researcher")
+arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.agent, name="arXiv_researcher")
 
 printer_agent = Agent(
     llm,
     [print_string],
     system_message="Any string you print is visible to the user.",
 )
-printer_node = AgentNode(state=state, agent=arXiv_agent, name="printer")
+printer_node = functools.partial(AgentNodeFactory.agent_node, agent=printer_agent.agent, name="printer_researcher")
 
 tools = [arxiv_search, print_string]
 tool_node = ToolNode(tools)
 
-workflow = StateGraph(state_schema=state)
+workflow = StateGraph(AgentState)
 
 workflow.add_node("arXiv_researcher", arXiv_node)
 workflow.add_node("printer", printer_node)

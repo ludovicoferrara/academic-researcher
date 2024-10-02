@@ -1,3 +1,4 @@
+from cohere import ToolMessage
 from graph_elements.agent import Agent
 from graph_elements.agent_state import AgentState
 
@@ -5,28 +6,19 @@ from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 
 
-class AgentNode : 
+class AgentNodeFactory : 
 
-    def __init__(self, state: AgentState, agent : Agent, name): 
-        prompt : ChatPromptTemplate = agent.prompt
-        llm = agent.llm
-    
-        # Concatenare i contenuti dei messaggi in una singola stringa
-        messages = state["messages"]
-        prompt_text = "\n".join([message.content for message in messages])
-    
-        # Passare il prompt al modello LLM  
-        response = llm.invoke(prompt_text)
-    
-        # Verifica se la risposta è una stringa o un dizionario
-        if isinstance(response, str):
-            result_content = response  # Se è una stringa, usala direttamente
+    # Helper function to create a node for a given agent
+    def agent_node(state, agent, name):
+        result = agent.invoke(state)
+        # We convert the agent output into a format that is suitable to append to the global state
+        if isinstance(result, ToolMessage):
+            pass
         else:
-            # In caso di altre strutture, gestiscile qui (es. se il modello restituisce un dizionario)
-            result_content = response.get("content", "Error: unexpected model answer.")
-
-        # Creiamo il formato corretto per il messaggio di ritorno
-        result = AIMessage(content=result_content, name=name)
-    
-        self.messages = result,
-        self.sender = name,
+            result = AIMessage(**result.dict(exclude={"type", "name"}), name=name)
+        return {
+            "messages": [result],
+            # Since we have a strict workflow, we can
+            # track the sender so we know who to pass to next.
+            "sender": name,
+    }

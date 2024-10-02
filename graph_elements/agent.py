@@ -1,5 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.language_models import LLM
+
 class Agent:
 
     def __init__(self, llm: LLM , tools, system_message: str) :
@@ -21,7 +22,10 @@ class Agent:
         agent_prompt = agent_prompt.partial(system_message = system_message)
         agent_prompt = agent_prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
 
-        self.llm = llm
-        self.prompt: ChatPromptTemplate = agent_prompt
-        self.tools = tools
+        self._llm = llm
+        self._prompt: ChatPromptTemplate = agent_prompt
+        self._tools = tools
     
+    @property
+    def agent(self):
+        return self._prompt | self._llm.bind_tools(self._tools)
