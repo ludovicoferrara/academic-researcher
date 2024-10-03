@@ -137,16 +137,19 @@ graph = workflow.compile()
 print("Graph definition done")
 input("press any key to continue")
 
-#try:
- #   display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
-#except Exception:
- #   pass
+try:
+   display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
+except Exception:
+   pass
+
+print("Graph display done")
+input("press any key to continue")
 
 events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Research articles about quantum computing"
+                content="Research articles about artificial intelligence"
             )
         ],
     },

@@ -25,7 +25,7 @@ def arxiv_search(
 
 # Funzione per costruire l'URL della query
 def build_query_url(search_term, start=0, max_results=10):
-    base_url = "http://export.arxiv.org/api/query"
+    base_url = "https://export.arxiv.org/api/query"
     query = f"search_query=all:{search_term}&start={start}&max_results={max_results}"
     return f"{base_url}?{query}"
 
@@ -35,7 +35,7 @@ def fetch_arxiv_data(search_term, start=0, max_results=10):
     
     try:
         # Imposta un timeout di 10 secondi
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=30)
         response.raise_for_status()  # Verifica se la richiesta ha avuto successo
         return response.content
     
@@ -61,7 +61,7 @@ def parse_arxiv_data(xml_data):
         authors = entry.find_all('author')
         author_names = [author.find('name').text for author in authors]
         author_names = ', '.join(author_names)
-        s+= "Title: {title}" + "Authors: {author_names}" + "Abstract: {summary}" + ("-" * 40) 
+        s+= f"Title: {title}" + f"Authors: {author_names}" + f"Abstract: {summary}" + ("-" * 40) 
     return s
 
 # Esempio di utilizzo
