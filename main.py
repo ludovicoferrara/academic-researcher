@@ -149,7 +149,7 @@ events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Research articles about artificial intelligence"
+                content="Research articles about spacial"
             )
         ],
     },
