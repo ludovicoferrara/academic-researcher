@@ -90,7 +90,9 @@ state = AgentState(
 arXiv_agent = Agent(
     llm,
     [arxiv_search],
-    system_message="You should provide titles, authors and abstracts based on the search term.",
+    system_message="You should provide titles, authors and abstracts from arXiv based on the search term. "
+    "If you can not identify a search term in the question try to understand what it is about "
+    "and create yourself a search term that fits the question.",
 )
 arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.agent, name="arXiv_researcher")
 
@@ -149,7 +151,7 @@ events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Research articles about spacial"
+                content="When was Retrivial Augmented Generation firstly introduced?"
             )
         ],
     },
