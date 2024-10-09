@@ -44,13 +44,8 @@ from graph_elements.router import Router
 from tools.arXiv_research import arxiv_search 
 from tools.printer import print_string
 
-#os.environ["TAVILY_API_KEY"] = "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"
 #os.environ["OPENAI_API_KEY"] = "sk-GEB9oAjwKUnuCxlEO6gu8GzO1D75F4WLxo6UhPkz4HT3BlbkFJVjxNR2lUFVB1wSm_4annlkQb4wnEhqK04auNR0bfwA"
 os.environ["COHERE_API_KEY"] = "LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17"
-
-#def _set_if_undefined(var: str):
- #   if not os.environ.get(var):
-  #      os.environ[var] = getpass.getpass(f"Please provide your {var}")
 
 #hf_llm = HuggingFaceHub(
   #  repo_id="OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",  # Modello open source gratuito e pubblico
@@ -60,39 +55,22 @@ os.environ["COHERE_API_KEY"] = "LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17"
 
 llm = ChatCohere(cohere_api_key="LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17")
 
-#_set_if_undefined("TAVILY_API_KEY")
-
-#tavily_tool = TavilySearchResults(max_results=5)
-
-# Warning: This executes code locally, which can be unsafe when not sandboxed
-#repl = PythonREPL()
-
 state = AgentState(
     messages=[],
     sender=""
 )
 
-# Creazione e Definizione degli agenti
-#research_agent = Agent(
-   # hf_llm,
-  #  [tavily_tool],
- #   system_message="You should provide accurate data for the chart_generator to use.",
-#)
-#research_node = AgentNode(state=state, agent=research_agent, name="Researcher")
-
-#chart_agent = Agent(
-   # hf_llm,
-  #  [python_repl],
- #   system_message="Any charts you display will be visible by the user.",
-#)
-#chart_node = AgentNode(state=state, agent=chart_agent, name="chart_generator")
+search_term_agent = Agent(
+    llm,
+    [],
+    system_message="Generate 2 alternative search terms based on the user's input and answer in JSON format TODO."
+)
+search_term_node = functools.partial(AgentNodeFactory.agent_node, agent=search_term_agent.agent, name="search_term_generator")
 
 arXiv_agent = Agent(
     llm,
     [arxiv_search],
-    system_message="You should provide titles, authors and abstracts from arXiv based on the search term. "
-    "If you can not identify a search term in the question try to understand what it is about "
-    "and create yourself a search term that fits the question.",
+    system_message="You should provide titles, authors and abstracts from arXiv based on the search terms."
 )
 arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.agent, name="arXiv_researcher")
 
@@ -108,12 +86,19 @@ tool_node = ToolNode(tools)
 
 workflow = StateGraph(AgentState)
 
+workflow.add_node("search_term_generator", search_term_node)
+
 workflow.add_node("arXiv_researcher", arXiv_node)
+
 workflow.add_node("printer", printer_node)
 
-#workflow.add_node("chart_generator", chart_node)
 workflow.add_node("call_tool", tool_node)
 
+workflow.add_conditional_edges(
+    "search_term_generator",
+    Router.route,
+    {"continue": "arXiv_researcher", "__end__": END},
+)
 workflow.add_conditional_edges(
     "arXiv_researcher",
     Router.route,
@@ -124,7 +109,6 @@ workflow.add_conditional_edges(
     Router.route,
     {"continue": "arXiv_researcher", "call_tool": "call_tool", "__end__": END},
 )
-
 workflow.add_conditional_edges(
     "call_tool",
     lambda x: x["sender"],
@@ -133,7 +117,7 @@ workflow.add_conditional_edges(
         "printer": "printer",
     },
 )
-workflow.add_edge(START, "arXiv_researcher")
+workflow.add_edge(START, "search_term_generator")
 graph = workflow.compile()
 
 print("Graph definition done")
@@ -151,7 +135,7 @@ events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="When was Retrivial Augmented Generation firstly introduced?"
+                content="Search articles about Retrieval Augmented Generation"
             )
         ],
     },
@@ -159,4 +143,4 @@ events = graph.stream(
 )
 for s in events:
     print(s)
-    print("----")
+    print("----\n")

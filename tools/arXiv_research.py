@@ -7,12 +7,12 @@ from requests.exceptions import ConnectionError, Timeout, RequestException
 
 @tool
 def arxiv_search(
-    search_term: Annotated[str, "the search tearm to make research on arXiv"],
+    search_term: Annotated[str, "the search tearms to make research on arXiv"],
     start: int = 0,
     max_results: int = 10
 ) -> str:
     """
-    Use this tool to make research of articles on arXiv. It returns titles, authors and abstracts.
+    Use this tool to make multiple researches of articles on arXiv. It returns titles, authors and abstracts.
     """
     xml_data = fetch_arxiv_data(search_term, start, max_results)
     
