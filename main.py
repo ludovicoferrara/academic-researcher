@@ -63,9 +63,10 @@ state = AgentState(
 search_term_agent = Agent(
     llm,
     [],
-    system_message="Generate 2 alternative search terms based on the user's input and answer in JSON format TODO."
+    system_message="Generate 2 alternative search terms based on the user's input and answer in the following JSON format: "
+    "{Prompt1:\"first-prompt\" , Prompt2:\"second-prompt\"}" 
 )
-search_term_node = functools.partial(AgentNodeFactory.agent_node, agent=search_term_agent.agent, name="search_term_generator")
+search_term_node = functools.partial(AgentNodeFactory.agent_node, agent=search_term_agent.agent, name="term_generator")
 
 arXiv_agent = Agent(
     llm,
@@ -77,7 +78,8 @@ arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.ag
 printer_agent = Agent(
     llm,
     [print_string],
-    system_message="Any string you print is visible to the user.",
+    system_message="You should format the string is given to you by calling the proper tool according to the request." 
+    "If in the request there isn't a specification about what to show, you should call the tool that show the most information"
 )
 printer_node = functools.partial(AgentNodeFactory.agent_node, agent=printer_agent.agent, name="printer_researcher")
 
@@ -86,7 +88,7 @@ tool_node = ToolNode(tools)
 
 workflow = StateGraph(AgentState)
 
-workflow.add_node("search_term_generator", search_term_node)
+workflow.add_node("term_generator", search_term_node)
 
 workflow.add_node("arXiv_researcher", arXiv_node)
 
@@ -95,7 +97,7 @@ workflow.add_node("printer", printer_node)
 workflow.add_node("call_tool", tool_node)
 
 workflow.add_conditional_edges(
-    "search_term_generator",
+    "term_generator",
     Router.route,
     {"continue": "arXiv_researcher", "__end__": END},
 )
@@ -117,7 +119,7 @@ workflow.add_conditional_edges(
         "printer": "printer",
     },
 )
-workflow.add_edge(START, "search_term_generator")
+workflow.add_edge(START, "term_generator")
 graph = workflow.compile()
 
 print("Graph definition done")
