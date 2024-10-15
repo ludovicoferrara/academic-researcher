@@ -63,8 +63,8 @@ state = AgentState(
 search_term_agent = Agent(
     llm,
     [],
-    system_message="You should provide 3 different alternative terms in JSON format {Prompt1:\"first-prompt\", Prompt2:\"second-prompt\", Prompt3:\"third-prompt\"} "
-    "to research articles about."
+    system_message="You should provide 3 different alternative search terms in the following "
+    "JSON format {Term1:\"first-term\", Term:\"second-term\", Term3:\"third-term\"} to permit to other assistants to make research on arXiv."
 )
 search_term_node = functools.partial(AgentNodeFactory.agent_node, agent=search_term_agent.agent, name="term_generator")
 
@@ -99,7 +99,7 @@ workflow.add_node("call_tool", tool_node)
 workflow.add_conditional_edges(
     "term_generator",
     Router.route,
-    {"continue": "arXiv_researcher"},
+    {"continue": "arXiv_researcher","__end__": END},
 )
 workflow.add_conditional_edges(
     "arXiv_researcher",
