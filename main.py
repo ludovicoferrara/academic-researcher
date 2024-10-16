@@ -64,7 +64,7 @@ state = AgentState(
 search_term_agent = Agent(
     llm,
     [generate_terms],
-    system_message="You should provide alternative search terms to permit to other assistants to make research on arXiv."
+    system_message="You will generate alternative search terms to permit to other assistants to make research on arXiv."
 )
 search_term_node = functools.partial(AgentNodeFactory.agent_node, agent=search_term_agent.agent, name="term_generator")
 
@@ -115,6 +115,7 @@ workflow.add_conditional_edges(
     "call_tool",
     lambda x: x["sender"],
     {
+        "term_generator": "term_generator",
         "arXiv_researcher": "arXiv_researcher",
         "printer": "printer",
     },
@@ -123,14 +124,6 @@ workflow.add_edge(START, "term_generator")
 graph = workflow.compile()
 
 print("Graph definition done")
-input("press any key to continue")
-
-try:
-   display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
-except Exception:
-   pass
-
-print("Graph display done")
 input("press any key to continue")
 
 events = graph.stream(
