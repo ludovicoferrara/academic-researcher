@@ -43,6 +43,7 @@ from graph_elements.agent import Agent
 from graph_elements.router import Router
 from tools.arXiv_research import arxiv_search 
 from tools.printer import print_string
+from tools.term_generation import generate_terms
 
 #os.environ["OPENAI_API_KEY"] = "sk-GEB9oAjwKUnuCxlEO6gu8GzO1D75F4WLxo6UhPkz4HT3BlbkFJVjxNR2lUFVB1wSm_4annlkQb4wnEhqK04auNR0bfwA"
 os.environ["COHERE_API_KEY"] = "LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17"
@@ -62,9 +63,8 @@ state = AgentState(
 
 search_term_agent = Agent(
     llm,
-    [],
-    system_message="You should provide 3 different alternative search terms in the following "
-    "JSON format {Term1:\"first-term\", Term:\"second-term\", Term3:\"third-term\"} to permit to other assistants to make research on arXiv."
+    [generate_terms],
+    system_message="You should provide alternative search terms to permit to other assistants to make research on arXiv."
 )
 search_term_node = functools.partial(AgentNodeFactory.agent_node, agent=search_term_agent.agent, name="term_generator")
 
@@ -83,7 +83,7 @@ printer_agent = Agent(
 )
 printer_node = functools.partial(AgentNodeFactory.agent_node, agent=printer_agent.agent, name="printer_researcher")
 
-tools = [arxiv_search, print_string]
+tools = [arxiv_search, print_string, generate_terms]
 tool_node = ToolNode(tools)
 
 workflow = StateGraph(AgentState)
@@ -99,7 +99,7 @@ workflow.add_node("call_tool", tool_node)
 workflow.add_conditional_edges(
     "term_generator",
     Router.route,
-    {"continue": "arXiv_researcher","__end__": END},
+    {"continue": "arXiv_researcher", "call_tool": "call_tool", "__end__": END},
 )
 workflow.add_conditional_edges(
     "arXiv_researcher",
