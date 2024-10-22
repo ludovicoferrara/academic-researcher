@@ -9,4 +9,4 @@ def print_string(
     Use this to print the result.
     """
     print(text)
-    return f"The string following string has been printed: {text}.\nRespond with FINAL ANSWER."
+    return f"The string following string has been printed: \n\n\n{text}\n\n\n.\nIf all the results have been printed, respond with FINAL ANSWER."

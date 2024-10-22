@@ -8,20 +8,21 @@ from utils import extract_prompts
 
 @tool
 def arxiv_search(
-    search_terms: Annotated[str, "the search terms in JSON format to make research on arXiv"],
+    search_term: Annotated[str, "the search term to make research on arXiv"],
     start: int = 0,
     max_results: int = 10
 ) -> str:
     """
-    Use this tool to make multiple researches of articles on arXiv. It returns titles, authors and abstracts.
+    Use this tool to make multiple researches of articles on arXiv. It returns Ids, titles, authors and abstracts.
     """
-    first_term= extract_prompts(search_terms)[0]
-    second_term= extract_prompts(search_terms)[1]
+#    first_term= extract_prompts(search_terms)[0]
+ #   second_term= extract_prompts(search_terms)[1]
 
-    first_xml_data = fetch_arxiv_data(first_term, start, max_results)
-    xml_data = fetch_arxiv_data(second_term, start, max_results) + first_xml_data
+  #  first_xml_data = fetch_arxiv_data(first_term, start, max_results)
+   # xml_data = fetch_arxiv_data(second_term, start, max_results) + first_xml_data
+    xml_data = fetch_arxiv_data(search_term, start, max_results)
     if xml_data:
-        return parse_arxiv_data(first_xml_data) 
+        return parse_arxiv_data(xml_data) 
     else:
         return "No available data or bad request error"
 
@@ -80,6 +81,6 @@ def parse_arxiv_data(xml_data):
         author_names = [author.find('name').text for author in authors]
         author_names = ', '.join(author_names)
         
-        s += f"Id: {id} Title: {title} Authors: {author_names} Abstract: {summary}" + ("-" * 40)
+        s += f"Id: {id} Title: {title} Authors: {author_names} Abstract: {summary}" + "\n\n"
     
     return s
