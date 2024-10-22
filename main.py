@@ -56,11 +56,6 @@ os.environ["COHERE_API_KEY"] = "LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17"
 
 llm = ChatCohere(cohere_api_key="LWd3Z734C3sOyWTPFYIxk1L7GAIJU2BTSC7F9h17")
 
-state = AgentState(
-    messages=[],
-    sender=""
-)
-
 search_term_agent = Agent(
     llm,
     [generate_terms],
@@ -130,7 +125,7 @@ events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Search articles about Retrieval Augmented Generation"
+                content="Generate some alternative search terms and than search articles about Retrieval Augmented Generation"
             )
         ],
     },
