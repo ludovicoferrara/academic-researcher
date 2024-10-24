@@ -13,7 +13,7 @@ def arxiv_search(
     max_results: int = 10
 ) -> str:
     """
-    Use this tool to make multiple researches of articles on arXiv. It returns Ids, titles, authors and abstracts.
+    Use this tool to search of articles on arXiv. It returns Ids, titles, authors and abstracts.
     """
 #    first_term= extract_prompts(search_terms)[0]
  #   second_term= extract_prompts(search_terms)[1]

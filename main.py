@@ -1,42 +1,18 @@
 import functools
-import getpass
 import os
 
 from langchain_cohere import ChatCohere
 from langchain_core.messages import (
-    BaseMessage,
     HumanMessage,
-    ToolMessage,
 )
-
-from langchain_openai import OpenAI
-
 from graph_elements.agent_node import AgentNodeFactory
 from graph_elements.agent_state import AgentState
 
-from langchain_core.prompts import ChatPromptTemplate
-
 from langgraph.graph import END, StateGraph, START
 
-from typing import Annotated
-
-from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain_core.tools import tool
-from langchain_experimental.utilities import PythonREPL
-
-import operator
-from typing import Annotated, Sequence, TypedDict
-
 from tools.arXiv_research import arxiv_search
-from tools.python_repl import python_repl
-
-from langchain_core.messages import AIMessage
 
 from langgraph.prebuilt import ToolNode
-
-from typing import Literal
-
-from IPython.display import Image, display
 
 from graph_elements.agent import Agent
 from graph_elements.router import Router
@@ -82,7 +58,7 @@ printer_agent = Agent(
 )
 printer_node = functools.partial(AgentNodeFactory.agent_node, agent=printer_agent.agent, name="printer")
 
-tools = [arxiv_search, print_string, generate_terms]
+tools = [print_string, arxiv_search, generate_terms]
 tool_node = ToolNode(tools)
 
 workflow = StateGraph(AgentState)
@@ -129,8 +105,8 @@ events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Generate an alternative search term to Retrieval Augmented Generation "
-                "and use that to search articles on arXiv. Than print the abstracts of the articles that arXiv returns."
+                content="Generate one alternative search term to Retrieval Augmented Generation. "
+                "Use that term to search articles about on arXiv. Than print the abstracts of the articles that arXiv returns."
             )
         ],
     },
