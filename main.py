@@ -1,10 +1,13 @@
 import functools
 import os
 
+from langchain_openai import ChatOpenAI
 from langchain_cohere import ChatCohere
+
 from langchain_core.messages import (
     HumanMessage,
 )
+
 from graph_elements.agent_node import AgentNodeFactory
 from graph_elements.agent_state import AgentState
 
@@ -22,6 +25,8 @@ from tools.term_generation import generate_terms
 
 #os.environ["OPENAI_API_KEY"] = "sk-GEB9oAjwKUnuCxlEO6gu8GzO1D75F4WLxo6UhPkz4HT3BlbkFJVjxNR2lUFVB1wSm_4annlkQb4wnEhqK04auNR0bfwA"
 os.environ["COHERE_API_KEY"] = "2xyJqgM6feH8cEREbBGJ7DqtcyDeCTUxWSAfwtMc"
+os.environ["OPENAI_API_KEY"] = "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"
+
 
 #hf_llm = HuggingFaceHub(
   #  repo_id="OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",  # Modello open source gratuito e pubblico
@@ -29,7 +34,8 @@ os.environ["COHERE_API_KEY"] = "2xyJqgM6feH8cEREbBGJ7DqtcyDeCTUxWSAfwtMc"
 #)
 #llm = OpenAI(model="gpt-3.5-turbo", temperature=0.7)
 
-llm = ChatCohere(cohere_api_key="2xyJqgM6feH8cEREbBGJ7DqtcyDeCTUxWSAfwtMc")
+#llm = ChatCohere(cohere_api_key="2xyJqgM6feH8cEREbBGJ7DqtcyDeCTUxWSAfwtMc")
+llm = ChatOpenAI(model="gpt-4o", api_key="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")
 
 search_term_agent = Agent(
     llm,
