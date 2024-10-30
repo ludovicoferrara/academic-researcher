@@ -1,6 +1,10 @@
 import functools
 import os
 
+from IPython.display import Image, display
+from langchain_core.runnables.graph import CurveStyle, MermaidDrawMethod, NodeStyles
+
+
 from langchain_openai import ChatOpenAI
 from langchain_cohere import ChatCohere
 
@@ -60,7 +64,7 @@ arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.ag
 printer_agent = Agent(
     llm,
     [print_string],
-    system_message="You should print the string given to you."
+    system_message="You should print the string given to you to display it to the user."
 )
 printer_node = functools.partial(AgentNodeFactory.agent_node, agent=printer_agent.agent, name="printer")
 
@@ -107,17 +111,38 @@ graph = workflow.compile()
 print("Graph definition done")
 input("press any key to continue")
 
+#display(
+#    Image(
+#        graph.get_graph().draw_mermaid_png(
+#            draw_method=MermaidDrawMethod.API,
+#        )
+#    )
+#)
+#events = graph.stream(
+#    {
+#        "messages": [
+#            HumanMessage(
+#                content="Generate one alternative search term to Retrieval Augmented Generation. "
+#                "Use that term to search articles about on arXiv. Than print the abstracts of the articles that arXiv returns."
+#                "Do all the precedent steps 3 times."
+#            )
+#        ],
+#    },
+#    {"recursion_limit": 150},
+#)
 events = graph.stream(
     {
         "messages": [
             HumanMessage(
                 content="Generate one alternative search term to Retrieval Augmented Generation. "
-                "Use that term to search articles about on arXiv. Than print the abstracts of the articles that arXiv returns."
+                "Use that term to search articles about on arXiv. Than print the titles of the articles that arXiv returns."
+                "Do all the precedent steps 3 times."
             )
         ],
     },
     {"recursion_limit": 150},
 )
+
 for s in events:
     print(s)
     print("----\n")

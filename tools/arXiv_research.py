@@ -10,7 +10,7 @@ from utils import extract_prompts
 def arxiv_search(
     search_term: Annotated[str, "the search term to make research on arXiv"],
     start: int = 0,
-    max_results: int = 10
+    max_results: int = 2
 ) -> str:
     """
     Use this tool to search of articles on arXiv. It returns Ids, titles, authors and abstracts.
