@@ -22,7 +22,7 @@ def arxiv_search(
    # xml_data = fetch_arxiv_data(second_term, start, max_results) + first_xml_data
     xml_data = fetch_arxiv_data(search_term, start, max_results)
     if xml_data:
-        return parse_arxiv_data(xml_data) 
+        return xml_data 
     else:
         return "No available data or bad request error"
 
@@ -53,34 +53,34 @@ def fetch_arxiv_data(search_term, start=0, max_results=10):
     return None
 
 # Funzione per parsare i risultati XML con BeautifulSoup
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 
-def parse_arxiv_data(xml_data):
-    # Parsing con BeautifulSoup
-    soup = BeautifulSoup(xml_data, 'lxml-xml')
+# def parse_arxiv_data(xml_data):
+#     # Parsing con BeautifulSoup
+#     soup = BeautifulSoup(xml_data, 'lxml-xml')
     
-    # Set per tenere traccia degli ID già visti
-    seen_ids = set()
+#     # Set per tenere traccia degli ID già visti
+#     seen_ids = set()
     
-    # Iterare sui risultati e stampare informazioni utili
-    entries = soup.find_all('entry')
-    s = ""
-    for entry in entries:
-        id = entry.find('id').text
+#     # Iterare sui risultati e stampare informazioni utili
+#     entries = soup.find_all('entry')
+#     s = ""
+#     for entry in entries:
+#         id = entry.find('id').text
         
-        # Verifica se l'ID è già stato elaborato
-        if id in seen_ids:
-            continue  # Salta se l'ID è già stato processato
+#         # Verifica se l'ID è già stato elaborato
+#         if id in seen_ids:
+#             continue  # Salta se l'ID è già stato processato
         
-        # Aggiungi l'ID al set
-        seen_ids.add(id)
+#         # Aggiungi l'ID al set
+#         seen_ids.add(id)
+#         s+=entry.text
+#         # title = entry.find('title').text
+#         # summary = entry.find('summary').text
+#         # authors = entry.find_all('author')
+#         # author_names = [author.find('name').text for author in authors]
+#         # author_names = ', '.join(author_names)
         
-        title = entry.find('title').text
-        summary = entry.find('summary').text
-        authors = entry.find_all('author')
-        author_names = [author.find('name').text for author in authors]
-        author_names = ', '.join(author_names)
-        
-        s += f"Id: {id} Title: {title} Authors: {author_names} Abstract: {summary}" + "\n\n"
+#         # s += f"Id: {id} Title: {title} Authors: {author_names} Abstract: {summary}" + "\n\n"
     
-    return s
+#     return s
