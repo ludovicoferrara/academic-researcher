@@ -64,7 +64,7 @@ arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.ag
 parser_agent = Agent(
     llm,
     [parse_arxiv_data],
-    system_message="You should parse the xml file obtained through arXiv search."
+    system_message="You should parse and format to json the files obtained through arXiv search."
 )
 parser_node = functools.partial(AgentNodeFactory.agent_node, agent=parser_agent.agent, name="parser")
 
@@ -110,6 +110,18 @@ graph = workflow.compile()
 
 print("Graph definition done")
 input("press any key to continue")
+# Define the initial state
+# initial_state = {
+#     "messages": [
+#         HumanMessage(
+#             content="Generate an alternative search term to Retrieval Augmented Generation. "
+#                     "Use that term to search articles about that on arXiv. Then parse the articles that arXiv returns. "
+#                     "Do all the precedent steps 3 times."
+#         )
+#     ],
+# }
+# recursion_limit = 150
+# final_state = graph.invoke(initial_state)
 
 #display(
 #    Image(
@@ -118,31 +130,17 @@ input("press any key to continue")
 #        )
 #    )
 #)
-#events = graph.stream(
-#    {
-#        "messages": [
-#            HumanMessage(
-#                content="Generate one alternative search term to Retrieval Augmented Generation. "
-#                "Use that term to search articles about on arXiv. Than print the abstracts of the articles that arXiv returns."
-#                "Do all the precedent steps 3 times."
-#            )
-#        ],
-#    },
-#    {"recursion_limit": 150},
-#)
 events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Generate an alternative search term to Retrieval Augmented Generation. "
-                "Use that term to search articles about that on arXiv. Than parse the articles that arXiv returns."
-                "Do all the precedent steps 3 times."
+                content="Generate 3 alternative search term related to Quantum Computing "
+                "Use that terms to search articles about that on arXiv. Than parse and format to json the articles that arXiv returns."
             )
         ],
     },
     {"recursion_limit": 150},
 )
-
 for s in events:
     print(s)
     print("----\n")
