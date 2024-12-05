@@ -134,8 +134,9 @@ events = graph.stream(
     {
         "messages": [
             HumanMessage(
-                content="Generate 3 alternative search term related to Quantum Computing "
-                "Use that terms to search articles about that on arXiv. Than parse and format to json the articles that arXiv returns."
+                content="Generate 3 alternative short search terms related to Quantum Computing. "
+                " Use the terms to search articles about that on arXiv. "
+                " Then parse the obtained xml files and format them to json. "
             )
         ],
     },
