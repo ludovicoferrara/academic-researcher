@@ -24,20 +24,19 @@ from graph_elements.agent import Agent
 from graph_elements.router import Router
 from tools.arXiv_research import arxiv_search 
 from tools.parser import parse_arxiv_data
-from tools.python_repl import python_repl
+#from tools.python_repl import python_repl
 from tools.term_generation import generate_terms
 
 #os.environ["OPENAI_API_KEY"] = "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"
 #os.environ["COHERE_API_KEY"] = "2xyJqgM6feH8cEREbBGJ7DqtcyDeCTUxWSAfwtMc"
 #os.environ["OPENAI_API_KEY"] = "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"
 api_key = os.getenv("OPENAI_API_KEY")
-
 #hf_llm = HuggingFaceHub(
   #  repo_id="OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",  # Modello open source gratuito e pubblico
  #   huggingfacehub_api_token="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"
 #)
 #llm = OpenAI(model="gpt-3.5-turbo", temperature=0.7)
-
+print(os.getenv("OPENAI_API_KEY"))
 #llm = ChatCohere(cohere_api_key="2xyJqgM6feH8cEREbBGJ7DqtcyDeCTUxWSAfwtMc")
 llm = ChatOpenAI(model="gpt-4o", api_key=api_key)
 
