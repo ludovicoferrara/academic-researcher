@@ -1,10 +1,10 @@
 from typing import Annotated
 from langchain_core.tools import tool
 import requests
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import ConnectionError, Timeout, RequestException
-from utils import extract_prompts
+#from utils import extract_prompts
 
 @tool
 def arxiv_search(
