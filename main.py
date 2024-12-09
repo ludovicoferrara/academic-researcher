@@ -30,11 +30,7 @@ from tools.term_generation import generate_terms
 
 def main(): 
     api_key = os.getenv("OPENAI_API_KEY")
-    #hf_llm = HuggingFaceHub(
-    #  repo_id="OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",  # Modello open source gratuito e pubblico
-    #   huggingfacehub_api_token="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"
-    #)
-    #llm = OpenAI(model="gpt-3.5-turbo", temperature=0.7)
+    
     llm = ChatOpenAI(model="gpt-4o", api_key=api_key)
 
     search_term_agent = Agent(
