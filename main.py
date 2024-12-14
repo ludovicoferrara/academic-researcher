@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI
 #from langchain_cohere import ChatCohere
 
 from langchain_core.messages import (
-    HumanMessage,
+    HumanMessage
 )
 
 from graph_elements.agent_node import AgentNodeFactory
@@ -24,7 +24,6 @@ from graph_elements.agent import Agent
 from graph_elements.router import Router
 from tools.arXiv_research import arxiv_search 
 from tools.parser import parse_arxiv_data
-#from tools.python_repl import python_repl
 from tools.term_generation import generate_terms
 
 
@@ -36,27 +35,21 @@ def main():
     search_term_agent = Agent(
         llm,
         [generate_terms],
-        system_message="You should generate an alternative search term."
+        system_message="You should generate alternative search terms."
     )
     search_term_node = functools.partial(AgentNodeFactory.agent_node, agent=search_term_agent.agent, name="term_generator")
 
     arXiv_agent = Agent(
         llm,
         [arxiv_search],
-        system_message="You should make a research on arXive and provide Ids, titles, authors and abstracts."
+        system_message="You should make a research on arXive and provide Ids, titles, authors and abstracts. DON'T PARSE THE FUCKING XML FILES, ANOTHER AGENT WILL DO THAT."
     )
     arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.agent, name="arXiv_search")
 
-    #printer_agent = Agent(
-       # llm,
-      #  [print_string],
-     #   system_message="You should format the string is given to you by calling the proper tool according to the request." 
-    #    "If in the request there isn't a specification about what to show, you should call the tool that show the most information"
-    #)
     parser_agent = Agent(
         llm,
         [parse_arxiv_data],
-        system_message="You should parse and format to json the files obtained through arXiv search."
+        system_message="You should parse the XML files obtained through arXiv search."
     )
     parser_node = functools.partial(AgentNodeFactory.agent_node, agent=parser_agent.agent, name="parser")
 
@@ -122,13 +115,17 @@ def main():
     #        )
     #    )
     #)
+    humanPrompt = "I want you to search articles that talks about Quantum Mechanics."
+
     events = graph.stream(
         {
             "messages": [
                 HumanMessage(
-                    content="Generate 3 alternative short search terms related to Quantum Computing. "
-                    " Use the terms to search articles about that on arXiv. "
-                    " Then parse the obtained xml files and format them to json. "
+                    content=
+                    f"You are given this prompt: {humanPrompt}\n "
+                    " Generate 3 alternative short search terms related to the prompt, "
+                    " use the terms to search articles about that on arXiv, "
+                    " and after that, parse the obtained files. "
                 )
             ],
         },

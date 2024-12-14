@@ -10,10 +10,10 @@ from requests.exceptions import ConnectionError, Timeout, RequestException
 def arxiv_search(
     search_term: Annotated[str, "the search term to make research on arXiv"],
     start: int = 0,
-    max_results: int = 2
+    max_results: int = 10
 ) -> str:
     """
-    Use this tool to search of articles on arXiv. It returns Ids, titles, authors and abstracts.
+    Use this tool to search of articles on arXiv.
     """
 #    first_term= extract_prompts(search_terms)[0]
  #   second_term= extract_prompts(search_terms)[1]
