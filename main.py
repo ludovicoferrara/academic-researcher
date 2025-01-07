@@ -1,11 +1,9 @@
 import functools
 import os
 
-#from IPython.display import Image, display
 from langchain_core.runnables.graph import CurveStyle, MermaidDrawMethod, NodeStyles
 
 from langchain_openai import ChatOpenAI
-#from langchain_cohere import ChatCohere
 
 from langchain_core.messages import (
     HumanMessage
@@ -42,7 +40,7 @@ def main():
     arXiv_agent = Agent(
         llm,
         [arxiv_search],
-        system_message="You should make a research on arXive and provide Ids, titles, authors and abstracts. DON'T PARSE THE FUCKING XML FILES, ANOTHER AGENT WILL DO THAT."
+        system_message="You should make a research on arXive and provide Ids, titles, authors and abstracts. Dont't parse the XML file, another agent will do that."
     )
     arXiv_node = functools.partial(AgentNodeFactory.agent_node, agent=arXiv_agent.agent, name="arXiv_search")
 
@@ -95,27 +93,8 @@ def main():
 
     print("Graph definition done")
     input("press any key to continue")
-    # Define the initial state
-    # initial_state = {
-    #     "messages": [
-    #         HumanMessage(
-    #             content="Generate an alternative search term to Retrieval Augmented Generation. "
-    #                     "Use that term to search articles about that on arXiv. Then parse the articles that arXiv returns. "
-    #                     "Do all the precedent steps 3 times."
-    #         )
-    #     ],
-    # }
-    # recursion_limit = 150
-    # final_state = graph.invoke(initial_state)
-
-    #display(
-    #    Image(
-    #        graph.get_graph().draw_mermaid_png(
-    #            draw_method=MermaidDrawMethod.API,
-    #        )
-    #    )
-    #)
-    humanPrompt = "I want you to search articles that talks about Quantum Mechanics."
+    
+    humanPrompt = "I want you to search articles that talk about Quantum Mechanics."
 
     events = graph.stream(
         {
